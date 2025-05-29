@@ -108,13 +108,14 @@
         
         /* Hero Section */
         .hero {
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             position: relative;
             background: radial-gradient(circle at center, rgba(0, 255, 0, 0.1) 0%, transparent 50%);
+            padding: 100px 20px 40px;
         }
         
         .terminal-window {
@@ -124,6 +125,7 @@
             width: 90%;
             max-width: 800px;
             box-shadow: 0 0 50px rgba(0, 255, 0, 0.5);
+            margin-bottom: 40px;
         }
         
         .terminal-header {
@@ -154,6 +156,21 @@
             line-height: 1.6;
             max-height: 400px;
             overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        /* Custom scrollbar */
+        .terminal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .terminal-content::-webkit-scrollbar-track {
+            background: rgba(0, 255, 0, 0.1);
+        }
+        
+        .terminal-content::-webkit-scrollbar-thumb {
+            background: #00ff00;
+            border-radius: 4px;
         }
         
         .typing-effect {
@@ -172,6 +189,8 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            border-top: 1px solid rgba(0, 255, 0, 0.3);
+            padding-top: 10px;
         }
         
         .prompt {
@@ -352,15 +371,6 @@
         }
         
         /* Easter eggs styles */
-        .matrix-red {
-            color: #ff0000 !important;
-        }
-
-        .terminal-3d {
-            transform: perspective(1000px) rotateY(20deg);
-            transition: transform 0.5s;
-        }
-
         .secret-message {
             position: fixed;
             bottom: -100px;
@@ -372,6 +382,7 @@
             font-family: monospace;
             transition: bottom 0.5s;
             z-index: 9999;
+            max-width: 300px;
         }
 
         .secret-message.show {
@@ -400,6 +411,9 @@
             line-height: 1;
             z-index: 9999;
             display: none;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border: 1px solid #00ff00;
         }
 
         .glitch-window {
@@ -410,6 +424,7 @@
             border: 1px solid #00ff00;
             z-index: 9999;
             display: none;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
         }
 
         .glitch-window-header {
@@ -472,6 +487,45 @@
             color: #ff0000 !important;
         }
         
+        /* Sound controls */
+        .sound-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .sound-btn {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-family: monospace;
+        }
+        
+        .sound-btn:hover {
+            background: rgba(0, 255, 0, 0.2);
+        }
+        
+        /* Hint system */
+        .hint-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid #ffff00;
+            padding: 30px;
+            color: #ffff00;
+            display: none;
+            z-index: 10000;
+            max-width: 500px;
+        }
+        
         /* Responsive */
         @media (max-width: 768px) {
             .nav-links {
@@ -485,16 +539,41 @@
             .section-title {
                 font-size: 24px;
             }
+            
+            .terminal-window {
+                padding: 15px;
+            }
+            
+            .sound-controls {
+                bottom: 10px;
+                left: 10px;
+            }
         }
     </style>
 </head>
 <body>
     <canvas class="matrix-bg" id="matrix"></canvas>
     
+    <!-- Audio elements -->
+    <audio id="ambientSound" loop>
+        <source src="data:audio/mpeg;base64,SUQzAwAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjQ1LjEwMAAAAAAAAAAAAAAA//M4wAAAAAAAAAAAAEluZm8AAAAPAAAAEwAABLgAICAgICAgMDAwMDAwQEBAQEBAUFBQUFBQYGBgYGBgcHBwcHBwgICAgICAgJCQkJCQkKCgoKCgoLCwsLCwsLCwwMDAwMDAzMzMzMzM2NjY2NjY5OTk5OTk8PDw8PDw////////AAAAAExhdmM1OC45MQAAAAAAAAAAAAAAACQCgAAAAAAAAAA=" type="audio/mpeg">
+    </audio>
+    
     <!-- Hidden elements for easter eggs -->
     <div class="secret-message" id="secretMessage"></div>
     <div class="ascii-art" id="asciiArt"></div>
     <canvas class="binary-rain" id="binaryRain"></canvas>
+    <div class="hint-box" id="hintBox">
+        <h3>INDICE DÉBLOQUÉ</h3>
+        <p id="hintText"></p>
+        <button onclick="this.parentElement.style.display='none'" style="margin-top: 20px; background: #000; border: 1px solid #ffff00; color: #ffff00; padding: 10px; cursor: pointer;">FERMER</button>
+    </div>
+    
+    <!-- Sound controls -->
+    <div class="sound-controls">
+        <button class="sound-btn" id="soundToggle">🔊 Sons ON</button>
+        <button class="sound-btn" id="musicToggle">🎵 Ambiance ON</button>
+    </div>
     
     <!-- Header -->
     <header class="header">
@@ -518,7 +597,7 @@
                 <div class="terminal-button" style="background: #ff0000;"></div>
                 <div class="terminal-title">root@underground:~</div>
             </div>
-            <div class="terminal-content">
+            <div class="terminal-content" id="terminalContent">
                 <p class="typing-effect">Establishing secure connection...</p>
                 <p style="margin-top: 10px;">Connection established.</p>
                 <p style="margin-top: 10px;">Running on TOR exit node: LS-UNDERGROUND-437</p>
@@ -531,10 +610,12 @@
                 <p>Le moment est venu de révéler la vérité.</p>
                 <br>
                 <p style="color: #fff;">"La justice n'existe pas. Nous sommes la conséquence."</p>
+                <br>
+                <p style="color: #ffff00;">💡 INDICE: Commencez par 'help' pour explorer le système.</p>
                 
                 <div class="command-line">
                     <span class="prompt">root@underground:~$</span>
-                    <input type="text" class="command-input" placeholder="type 'help' for commands..." autofocus>
+                    <input type="text" class="command-input" id="commandInput" placeholder="type 'help' for commands..." autofocus>
                 </div>
             </div>
         </div>
@@ -575,6 +656,9 @@ Un hack à la fois. Une vérité à la fois.<br>
 STATUT: PHASE 1 - RECONSTRUCTION<br>
 MEMBRES ACTIFS: 7<br>
 NIVEAU DE PRÉPARATION: ████░░░░░░ 40%<br>
+<br>
+<span style="color: #ffff00;">// Note: Les anciens membres ont laissé des indices...</span><br>
+<span style="color: #ffff00;">// Cherchez les trois serveurs cachés dans le système</span><br>
             </code>
         </div>
     </section>
@@ -679,85 +763,4 @@ Statut: Actif - Cartographie des réseaux corrompus<br>
 [MEMBRE-005] "PIXEL"<br>
 Rôle: Opérations terrain<br>
 Cover: Livreur de pizzas<br>
-Spécialité: Installation hardware, infiltration physique<br>
-Statut: Actif - Sécurisation des planques<br>
-<br>
-[MEMBRE-006] "STATIC"<br>
-Rôle: Communications<br>
-Cover: Technicien télécom<br>
-Spécialité: Interception, brouillage radio<br>
-Statut: Actif - Écoute des fréquences gouvernementales<br>
-<br>
-[MEMBRE-007] "VOID"<br>
-Rôle: Finances & Logistique<br>
-Cover: Comptable freelance<br>
-Spécialité: Blanchiment crypto, transferts<br>
-Statut: Actif - Gestion des ressources<br>
-<br>
-Note: Tous les membres maintiennent leurs couvertures.<br>
-Aucune activité suspecte jusqu'à la Phase 2.<br>
-            </code>
-        </div>
-        
-        <div style="margin-top: 40px;">
-            <h3 style="color: #fff; margin-bottom: 20px;">RESSOURCES ACTUELLES:</h3>
-            <div class="grid">
-                <div class="card">
-                    <h3>Infrastructure</h3>
-                    <p>• Entrepôts sécurisés: 3</p>
-                    <p>• Véhicules modifiés: 4</p>
-                    <p>• Armes à feu: 6 (défense uniquement)</p>
-                    <p>• Serveurs: 0 (en cours d'acquisition)</p>
-                    <p>• Safe houses: 2 (temporaires)</p>
-                </div>
-                
-                <div class="card">
-                    <h3>Capacités Techniques</h3>
-                    <p>• Outils de hack: En reconstruction (30%)</p>
-                    <p>• Backdoors actives: 0 (phase reconnaissance)</p>
-                    <p>• Réseau crypté: Installation en cours</p>
-                    <p>• Capacité d'interception: Limitée</p>
-                    <p>• Brouillage: Prototype fonctionnel</p>
-                </div>
-                
-                <div class="card">
-                    <h3>Finances</h3>
-                    <p>• Budget opérationnel: $127,000</p>
-                    <p>• Revenus mensuels: Via couvertures</p>
-                    <p>• Crypto-réserve: En constitution</p>
-                    <p>• Fonds d'urgence: $45,000</p>
-                    <p>• Objectif Phase 2: $500,000</p>
-                </div>
-            </div>
-        </div>
-        
-        <div style="margin-top: 40px;">
-            <h3 style="color: #fff; margin-bottom: 20px;">OPÉRATIONS PLANIFIÉES:</h3>
-            <div class="code-block">
-                <code>
-[OP-001] "PREMIER SIGNAL"<br>
-Cible: Réseau de caméras du quartier sud<br>
-Objectif: Test d'intrusion, mapping du système<br>
-Risque: Minimal<br>
-Statut: Planification<br>
-<br>
-[OP-002] "ÉCOUTE PASSIVE"<br>
-Cible: Communications radio LSPD<br>
-Objectif: Collecte de preuves de corruption<br>
-Risque: Faible<br>
-Statut: En cours (17% de couverture)<br>
-<br>
-[OP-003] "TEST DE CHARGE"<br>
-Cible: Feux tricolores - Secteur industriel<br>
-Objectif: Vérifier nos capacités de disruption<br>
-Risque: Modéré<br>
-Statut: Attente acquisition serveurs<br>
-<br>
-[OP-004] "DOSSIER NOIR"<br>
-Cible: Base de données des contraventions<br>
-Objectif: Identifier les abus de pouvoir<br>
-Risque: Modéré<br>
-Statut: Reconnaissance<br>
-                </code>
-            </div>
-        </div
+Spéc
