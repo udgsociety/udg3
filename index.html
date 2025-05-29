@@ -719,7 +719,7 @@ La suite viendra à ceux qui comprennent.<br>
             }
         };
         
-        // Terminal functionality
+       // Terminal functionality
         const commandInput = document.getElementById('commandInput');
         const terminalContent = document.getElementById('terminalContent');
         let commandHistory = [];
@@ -738,5 +738,553 @@ La suite viendra à ceux qui comprennent.<br>
             const line = document.createElement('div');
             line.className = className;
             line.innerHTML = text;
+            line.style.marginTop = '10px';
             terminalContent.insertBefore(line, document.querySelector('.command-line'));
-            terminal
+            terminalContent.scrollTop = terminalContent.scrollHeight;
+        }
+        
+        // Show secret message
+        function showSecret(message) {
+            const secretDiv = document.getElementById('secretMessage');
+            secretDiv.textContent = message;
+            secretDiv.classList.add('show');
+            sounds.success();
+            
+            setTimeout(() => {
+                secretDiv.classList.remove('show');
+            }, 5000);
+        }
+        
+        // Show ASCII art
+        function showAscii(type) {
+            const asciiDiv = document.getElementById('asciiArt');
+            const arts = {
+                skull: `
+         ▄▄▄▄▄▄▄▄▄▄▄
+        ▐░░░░░░░░░░░▌
+       ▐░█▀▀▀▀▀▀▀█░▌
+       ▐░▌       ▐░▌
+       ▐░█▄▄▄▄▄▄▄█░▌
+       ▐░░░░░░░░░░░▌
+        ▀▀▀▀▀▀▀▀▀▀▀`,
+                
+                alpha: `
+    ╔═══════════════════════╗
+    ║   SERVEUR ALPHA       ║
+    ║   Accès: AUTORISÉ     ║
+    ║   Niveau: SECRET      ║
+    ╚═══════════════════════╝`,
+                
+                beta: `
+    ╔═══════════════════════╗
+    ║   SERVEUR BETA        ║
+    ║   Accès: AUTORISÉ     ║
+    ║   Niveau: CONFIDENTIEL║
+    ╚═══════════════════════╝`,
+                
+                gamma: `
+    ╔═══════════════════════╗
+    ║   SERVEUR GAMMA       ║
+    ║   Accès: AUTORISÉ     ║
+    ║   Niveau: MAXIMUM     ║
+    ╚═══════════════════════╝`,
+                
+                logo: `
+    ╦ ╦╔╗╔╔╦╗╔═╗╦═╗╔═╗╦═╗╔═╗╦ ╦╔╗╔╔╦╗
+    ║ ║║║║ ║║║╣ ╠╦╝║ ╦╠╦╝║ ║║ ║║║║ ║║
+    ╚═╝╝╚╝═╩╝╚═╝╩╚═╚═╝╩╚═╚═╝╚═╝╝╚╝═╩╝`
+            };
+            
+            if (arts[type]) {
+                asciiDiv.textContent = arts[type];
+                asciiDiv.style.display = 'block';
+                setTimeout(() => {
+                    asciiDiv.style.display = 'none';
+                }, 4000);
+            }
+        }
+        
+        // Key press sound
+        commandInput.addEventListener('keydown', function(e) {
+            if (e.key !== 'Enter' && e.key !== 'ArrowUp' && e.key !== 'ArrowDown') {
+                sounds.keypress();
+            }
+        });
+        
+        // Command history
+        commandInput.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    this.value = commandHistory[historyIndex];
+                }
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (historyIndex < commandHistory.length - 1) {
+                    historyIndex++;
+                    this.value = commandHistory[historyIndex];
+                } else {
+                    historyIndex = commandHistory.length;
+                    this.value = '';
+                }
+            }
+        });
+        
+        // Process commands
+        commandInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const command = this.value.trim();
+                if (command) {
+                    commandHistory.push(command);
+                    historyIndex = commandHistory.length;
+                    
+                    addLine(`<span style="color: #00ff00;">root@underground:~$</span> ${command}`);
+                    processCommand(command.toLowerCase());
+                    
+                    this.value = '';
+                }
+            }
+        });
+        
+        function processCommand(cmd) {
+            const parts = cmd.split(' ');
+            const command = parts[0];
+            const args = parts.slice(1).join(' ');
+            
+            switch(command) {
+                case 'help':
+                    sounds.success();
+                    addLine(`
+<span style="color: #fff;">COMMANDES DISPONIBLES:</span>
+  help              - Affiche cette aide
+  ls                - Liste les fichiers du répertoire
+  cd [dir]          - Change de répertoire  
+  cat [file]        - Lit un fichier
+  clear             - Efface le terminal
+  whoami            - Affiche l'identité actuelle
+  ping [server]     - Ping un serveur
+  ssh [server]      - Connexion SSH à un serveur
+  decrypt [code]    - Décrypte un message
+  hack              - Lance le mode hack
+  nmap              - Scan du réseau
+  hint              - Affiche un indice (coûte des points)
+  
+<span style="color: #ffff00;">COMMANDES SECRÈTES:</span>
+  Il existe d'autres commandes... à vous de les découvrir!
+  
+<span style="color: #ff00ff;">ÉNIGME DES 3 SERVEURS:</span>
+  ALPHA, BETA et GAMMA attendent vos connexions SSH...
+  Indices dans enigma.sh et secret.txt`);
+                    break;
+                    
+                case 'ls':
+                    sounds.keypress();
+                    addLine(`
+<span style="color: #00ff00;">drwxr-xr-x</span>  2 root root  4096 Jan 15  .
+<span style="color: #00ff00;">drwxr-xr-x</span>  3 root root  4096 Jan 15  ..
+<span style="color: #fff;">-rw-r--r--</span>  1 root root   220 Jan 15  README.md
+<span style="color: #fff;">-rw-------</span>  1 root root  1337 Jan 15  <span style="color: #ffff00;">secret.txt</span>
+<span style="color: #00ff00;">-rwx------</span>  1 root root  2048 Jan 15  <span style="color: #ffff00;">enigma.sh</span>
+<span style="color: #00ff00;">drwxr-xr-x</span>  2 root root  4096 Jan 15  tools/
+<span style="color: #00ff00;">drwx------</span>  2 root root  4096 Jan 15  .ssh/`);
+                    break;
+                    
+                case 'cat':
+                    if (args === 'secret.txt') {
+                        sounds.success();
+                        addLine(`
+<span style="color: #ffff00;">FICHIER CRYPTÉ - NIVEAU 1</span>
+01001100 01100101 00100000 01110000 01110010 01100101 01101101 01101001
+01100101 01110010 00100000 01110011 01100101 01110010 01110110 01100101
+01110101 01110010 00100000 01100001 00100000 01100011 01101111 01101101
+01101101 01100101 01101110 01100011 01100101 00100000 01100101 01101110
+00100000 00110010 00110000 00110001 00110100
+
+<span style="color: #00ff00;">Indice: Utilisez 'decrypt binary [texte]' pour décoder</span>`);
+                        foundSecrets.push('secret.txt');
+                        hackerLevel += 5;
+                    } else if (args === 'enigma.sh') {
+                        sounds.success();
+                        addLine(`
+<span style="color: #00ff00;">#!/bin/bash</span>
+<span style="color: #ffff00;"># L'ÉNIGME DES TROIS SERVEURS</span>
+
+echo "Trois serveurs gardent nos secrets..."
+echo ""
+echo "<span style="color: #ff00ff;">SERVEUR ALPHA</span>"
+echo "Le mot de passe est l'année où tout a commencé"
+echo "Indice: Regardez notre manifeste"
+echo ""
+echo "<span style="color: #ff00ff;">SERVEUR BETA</span>"  
+echo "Le mot de passe est notre nombre originel"
+echo "Indice: Combien étions-nous au début?"
+echo ""
+echo "<span style="color: #ff00ff;">SERVEUR GAMMA</span>"
+echo "Le mot de passe est notre ancien nom"
+echo "Indice: Avant UNDERGROUND SOCIETY, nous étions..."
+echo ""
+echo "Format: ssh [serveur]:[password]"
+echo ""
+echo "<span style="color: #ffff00;">Trouvez les trois pour débloquer le coffre-fort numérique!</span>"`);
+                        foundSecrets.push('enigma.sh');
+                        hackerLevel += 5;
+                    } else if (args === 'README.md') {
+                        addLine(`
+# UNDERGROUND SOCIETY
+
+Bienvenue dans notre système.
+Si vous êtes ici, c'est que vous avez été choisi.
+
+Explorez. Apprenez. Rejoignez-nous.
+
+<span style="color: #ffff00;">"La curiosité est le début de la sagesse"</span>`);
+                    } else {
+                        sounds.error();
+                        addLine(`<span style="color: #ff0000;">cat: ${args}: Aucun fichier de ce type</span>`);
+                    }
+                    break;
+                    
+                case 'cd':
+                    if (args === 'tools') {
+                        sounds.keypress();
+                        addLine('Répertoire changé: /home/underground/tools');
+                        showSecret('Répertoire tools découvert! +10 points');
+                        hackerLevel += 10;
+                    } else if (args === '.ssh') {
+                        sounds.keypress();
+                        addLine('Répertoire changé: /home/underground/.ssh');
+                        showSecret('Clés SSH trouvées! Intéressant...');
+                    } else {
+                        sounds.error();
+                        addLine(`<span style="color: #ff0000;">cd: ${args}: Aucun fichier ou dossier de ce type</span>`);
+                    }
+                    break;
+                    
+                case 'whoami':
+                    sounds.keypress();
+                    const identities = [
+                        'guest@underground',
+                        'novice@underground',
+                        'hacker@underground',
+                        'elite@underground',
+                        'master@underground'
+                    ];
+                    const level = Math.min(Math.floor(hackerLevel / 20), 4);
+                    addLine(identities[level]);
+                    addLine(`<span style="color: #ffff00;">Niveau de hacker: ${hackerLevel}</span>`);
+                    break;
+                    
+                case 'clear':
+                    location.reload();
+                    break;
+                    
+                case 'ping':
+                    if (args === 'alpha' || args === 'beta' || args === 'gamma') {
+                        sounds.success();
+                        addLine(`PING ${args}.underground.onion (10.0.0.${args === 'alpha' ? '1' : args === 'beta' ? '2' : '3'})
+64 bytes from ${args}: time=0.042ms
+<span style="color: #00ff00;">Serveur ${args.toUpperCase()} en ligne. Utilisez SSH pour vous connecter.</span>`);
+                    } else {
+                        sounds.error();
+                        addLine(`<span style="color: #ff0000;">ping: cannot resolve ${args}: Host inconnue</span>`);
+                    }
+                    break;
+                    
+                case 'ssh':
+                    const [server, password] = args.split(':');
+                    
+                    if (server === 'alpha' && password === '2014') {
+                        sounds.hack();
+                        addLine(`<span style="color: #00ff00;">Connexion à ALPHA réussie!</span>`);
+                        showAscii('alpha');
+                        foundSecrets.push('alpha');
+                        hackerLevel += 20;
+                        showSecret('Serveur ALPHA déverrouillé! 1/3');
+                        
+                        if (foundSecrets.includes('alpha') && foundSecrets.includes('beta') && foundSecrets.includes('gamma')) {
+                            unlockVault();
+                        }
+                    } else if (server === 'beta' && password === '5') {
+                        sounds.hack();
+                        addLine(`<span style="color: #00ff00;">Connexion à BETA réussie!</span>`);
+                        showAscii('beta');
+                        foundSecrets.push('beta');
+                        hackerLevel += 20;
+                        showSecret('Serveur BETA déverrouillé! 2/3');
+                        
+                        if (foundSecrets.includes('alpha') && foundSecrets.includes('beta') && foundSecrets.includes('gamma')) {
+                            unlockVault();
+                        }
+                    } else if (server === 'gamma' && password === 'null_sector') {
+                        sounds.hack();
+                        addLine(`<span style="color: #00ff00;">Connexion à GAMMA réussie!</span>`);
+                        showAscii('gamma');
+                        foundSecrets.push('gamma');
+                        hackerLevel += 20;
+                        showSecret('Serveur GAMMA déverrouillé! 3/3');
+                        
+                        if (foundSecrets.includes('alpha') && foundSecrets.includes('beta') && foundSecrets.includes('gamma')) {
+                            unlockVault();
+                        }
+                    } else {
+                        sounds.error();
+                        addLine(`<span style="color: #ff0000;">Permission denied (publickey,password)</span>`);
+                    }
+                    break;
+                    
+                case 'decrypt':
+                    if (args.startsWith('binary ')) {
+                        const binary = args.substring(7);
+                        try {
+                            const decoded = binary.match(/.{1,8}/g)
+                                .map(byte => String.fromCharCode(parseInt(byte, 2)))
+                                .join('');
+                            sounds.success();
+                            addLine(`<span style="color: #00ff00;">Message décrypté: "${decoded}"</span>`);
+                            hackerLevel += 10;
+                            showSecret('Premier cryptage résolu!');
+                        } catch (e) {
+                            sounds.error();
+                            addLine(`<span style="color: #ff0000;">Erreur de décryptage</span>`);
+                        }
+                    } else {
+                        sounds.error();
+                        addLine(`<span style="color: #ff0000;">Usage: decrypt [type] [data]</span>`);
+                    }
+                    break;
+                    
+                case 'hack':
+                    sounds.hack();
+                    document.body.style.animation = 'hack-pulse 1s';
+                    setTimeout(() => {
+                        document.body.style.animation = '';
+                    }, 1000);
+                    
+                    addLine(`
+<span style="color: #00ff00;">HACK MODE ACTIVÉ</span>
+===================
+Scanning des vulnérabilités...
+[████████████████████████] 100%
+
+Failles trouvées:
+1. Port 22 (SSH) - Authentification faible sur 3 serveurs
+2. Port 80 (HTTP) - Directory listing activé
+3. Port 1337 - Backdoor détectée
+
+<span style="color: #ffff00;">Les serveurs ALPHA, BETA et GAMMA sont vulnérables!</span>`);
+                    hackerLevel += 15;
+                    break;
+                    
+                case 'nmap':
+                    sounds.keypress();
+                    addLine(`
+Starting Nmap scan...
+Nmap scan report for underground network
+
+Host: 10.0.0.1 (ALPHA)
+PORT     STATE  SERVICE
+22/tcp   open   ssh
+
+Host: 10.0.0.2 (BETA)
+PORT     STATE  SERVICE
+22/tcp   open   ssh
+
+Host: 10.0.0.3 (GAMMA)
+PORT     STATE  SERVICE
+22/tcp   open   ssh
+
+Host: 10.0.0.42 (???)
+PORT     STATE  SERVICE
+1337/tcp open   [unknown]
+
+<span style="color: #ffff00;">Un serveur mystérieux sur 10.0.0.42...</span>`);
+                    break;
+                    
+                case 'hint':
+                    if (hackerLevel >= 10) {
+                        hackerLevel -= 10;
+                        const hints = [
+                            "Le premier serveur attend l'année de création du groupe",
+                            "Le deuxième serveur veut savoir combien vous étiez",
+                            "Le troisième serveur garde le nom originel (deux mots, underscore)",
+                            "Essayez 'cat enigma.sh' pour plus d'indices",
+                            "Les réponses sont dans le manifeste..."
+                        ];
+                        const randomHint = hints[Math.floor(Math.random() * hints.length)];
+                        addLine(`<span style="color: #ffff00;">INDICE: ${randomHint}</span>`);
+                        addLine(`<span style="color: #ff0000;">-10 points de hacker</span>`);
+                    } else {
+                        sounds.error();
+                        addLine(`<span style="color: #ff0000;">Pas assez de points! (Requis: 10)</span>`);
+                    }
+                    break;
+                    
+                case 'hurricane':
+                    hurricaneVirus();
+                    break;
+                    
+                // Easter eggs secrets
+                case '42':
+                    sounds.success();
+                    addLine(`<span style="color: #00ff00;">La réponse à la vie, l'univers et tout le reste.</span>`);
+                    showSecret('Référence culturelle trouvée!');
+                    hackerLevel += 5;
+                    break;
+                    
+                case 'matrix':
+                    sounds.hack();
+                    addLine(`<span style="color: #ff0000;">Prenez la pilule rouge ou la pilule bleue?</span>`);
+                    document.getElementById('matrix').style.opacity = '0.3';
+                    setTimeout(() => {
+                        document.getElementById('matrix').style.opacity = '0.1';
+                    }, 5000);
+                    break;
+                    
+                case 'konami':
+                    addLine(`<span style="color: #ffff00;">↑ ↑ ↓ ↓ ← → ← → B A</span>`);
+                    showSecret('Essayez le code sur la page...');
+                    break;
+                    
+                default:
+                    sounds.error();
+                    addLine(`<span style="color: #ff0000;">bash: ${command}: commande introuvable</span>`);
+                    addLine(`<span style="color: #888;">Tapez 'help' pour la liste des commandes</span>`);
+            }
+        }
+        
+        // Hurricane virus effect
+        function hurricaneVirus() {
+            sounds.error();
+            document.body.innerHTML += '<div class="virus-text">SYSTÈME COMPROMIS</div>';
+            document.querySelector('.virus-text').style.display = 'block';
+            
+            // Ambient glitch sound
+            let glitchInterval = setInterval(() => {
+                playSound(Math.random() * 1000 + 200, 0.05);
+            }, 100);
+            
+            setTimeout(() => {
+                document.querySelectorAll('*').forEach(el => {
+                    el.classList.add('virus-active');
+                });
+                
+                setTimeout(() => {
+                    clearInterval(glitchInterval);
+                    document.body.classList.add('corrupted');
+                    document.body.innerHTML = `
+                        <div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column;">
+                            <h1 style="color: #ff0000; font-size: 48px; text-shadow: 0 0 20px #ff0000;">HURRICANE DETECTED</h1>
+                            <p style="color: #ff0000; font-size: 24px; margin-top: 20px;">SYSTÈME DÉTRUIT</p>
+                            <p style="color: #00ff00; font-size: 16px; margin-top: 40px;">root@underground:~$ rm -rf / --no-preserve-root</p>
+                            <p style="color: #00ff00; font-size: 16px; margin-top: 10px;">Suppression en cours...</p>
+                            <p style="color: #fff; font-size: 12px; margin-top: 30px; opacity: 0.5;">Appuyez sur F5 pour redémarrer</p>
+                        </div>
+                    `;
+                }, 2000);
+            }, 1000);
+        }
+        
+        // Unlock vault when all servers found
+        function unlockVault() {
+            sounds.hack();
+            setTimeout(() => {
+                showAscii('logo');
+                addLine(`
+<span style="color: #ffff00;">╔════════════════════════════════════════════╗</span>
+<span style="color: #ffff00;">║     FÉLICITATIONS - COFFRE DÉVERROUILLÉ    ║</span>
+<span style="color: #ffff00;">╚════════════════════════════════════════════╝</span>
+
+<span style="color: #00ff00;">Vous avez trouvé les trois serveurs!</span>
+
+RÉCOMPENSES DÉBLOQUÉES:
+• Accès total au système Underground Society
+• Niveau Master Hacker atteint
+• Coordonnées du QG: <span style="color: #ff00ff;">Little Seoul, Bâtiment 437</span>
+• Code d'accès physique: <span style="color: #ff00ff;">NULL-2025-SECTOR</span>
+
+<span style="color: #ffff00;">Message du fondateur:</span>
+"Vous avez prouvé votre valeur. Bienvenue dans la famille.
+L'heure est venue de reconstruire et de révéler la vérité.
+Trouvez-nous. Rejoignez-nous. Changeons Los Santos."
+
+<span style="color: #ff00ff;">- FANTÔME</span>
+
+<span style="color: #888;">Commande secrète débloquée: 'underground'</span>`);
+                
+                hackerLevel = 100;
+                showSecret('NIVEAU MAXIMUM ATTEINT! Bienvenue, Master.');
+            }, 1000);
+        }
+        
+        // Konami Code
+        let konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+        let konamiIndex = 0;
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === konamiCode[konamiIndex]) {
+                konamiIndex++;
+                if (konamiIndex === konamiCode.length) {
+                    document.body.style.transform = 'rotate(180deg)';
+                    sounds.hack();
+                    setTimeout(() => {
+                        alert('EASTER EGG DÉBLOQUÉ!\n\nCode Konami activé!\nVous êtes un vrai hacker oldschool.\n\n+30 points bonus!');
+                        document.body.style.transform = '';
+                        hackerLevel += 30;
+                        showSecret('Konami Code! Respect.');
+                    }, 1000);
+                    konamiIndex = 0;
+                }
+            } else {
+                konamiIndex = 0;
+            }
+        });
+        
+        // Hurricane easter egg - type anywhere
+        let hurricaneBuffer = '';
+        document.addEventListener('keypress', function(e) {
+            if (e.target !== commandInput) {
+                hurricaneBuffer += e.key.toLowerCase();
+                if (hurricaneBuffer.includes('hurricane')) {
+                    hurricaneVirus();
+                    hurricaneBuffer = '';
+                }
+                if (hurricaneBuffer.length > 20) {
+                    hurricaneBuffer = hurricaneBuffer.slice(-10);
+                }
+            }
+        });
+        
+        // Random glitch effect
+        setInterval(() => {
+            if (Math.random() > 0.98) {
+                document.body.style.filter = `hue-rotate(${Math.random() * 360}deg)`;
+                setTimeout(() => {
+                    document.body.style.filter = '';
+                }, 100);
+            }
+        }, 3000);
+        
+        // Ambient computer sounds
+        setInterval(() => {
+            if (soundEnabled && Math.random() > 0.95) {
+                playSound(Math.random() * 100 + 50, 0.02);
+            }
+        }, 5000);
+        
+        // Initialize
+        window.addEventListener('load', function() {
+            addLine('<span style="color: #00ff00;">Système initialisé. Tapez "help" pour commencer.</span>');
+            showSecret('Bienvenue dans Underground Society');
+            
+            // Focus on input
+            commandInput.focus();
+        });
+        
+        // Keep focus on input
+        document.addEventListener('click', function() {
+            commandInput.focus();
+        });
+    </script>
+</body>
+</html>
