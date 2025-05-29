@@ -93,19 +93,6 @@
             text-shadow: 0 0 10px #00ff00;
         }
         
-        .nav-links a::after {
-            content: "_";
-            position: absolute;
-            right: -10px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        
-        .nav-links a:hover::after {
-            opacity: 1;
-            animation: blink 0.5s infinite;
-        }
-        
         /* Hero Section */
         .hero {
             min-height: 100vh;
@@ -159,7 +146,6 @@
             padding-right: 10px;
         }
         
-        /* Custom scrollbar */
         .terminal-content::-webkit-scrollbar {
             width: 8px;
         }
@@ -171,17 +157,6 @@
         .terminal-content::-webkit-scrollbar-thumb {
             background: #00ff00;
             border-radius: 4px;
-        }
-        
-        .typing-effect {
-            overflow: hidden;
-            white-space: nowrap;
-            animation: typing 2s steps(40, end);
-        }
-        
-        @keyframes typing {
-            from { width: 0 }
-            to { width: 100% }
         }
         
         .command-line {
@@ -249,33 +224,6 @@
             background: rgba(0, 255, 0, 0.1);
             box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
             transform: translateY(-5px);
-        }
-        
-        .card::before {
-            content: "";
-            position: absolute;
-            top: -100%;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(transparent, rgba(0, 255, 0, 0.2), transparent);
-            transition: top 0.5s;
-        }
-        
-        .card:hover::before {
-            top: 100%;
-        }
-        
-        .card h3 {
-            font-size: 20px;
-            margin-bottom: 15px;
-            color: #fff;
-        }
-        
-        .card p {
-            font-size: 14px;
-            line-height: 1.6;
-            color: #00ff00;
         }
         
         /* Code blocks */
@@ -364,16 +312,10 @@
             background: rgba(0, 0, 0, 0.9);
         }
         
-        .footer p {
-            font-size: 14px;
-            color: #00ff00;
-            margin-bottom: 10px;
-        }
-        
         /* Easter eggs styles */
         .secret-message {
             position: fixed;
-            bottom: -100px;
+            bottom: -200px;
             right: 20px;
             background: #00ff00;
             color: #000;
@@ -387,16 +329,6 @@
 
         .secret-message.show {
             bottom: 20px;
-        }
-
-        .hack-mode {
-            animation: hack-pulse 0.5s infinite;
-        }
-
-        @keyframes hack-pulse {
-            0% { filter: brightness(1); }
-            50% { filter: brightness(1.5) hue-rotate(180deg); }
-            100% { filter: brightness(1); }
         }
 
         .ascii-art {
@@ -414,35 +346,6 @@
             background: rgba(0, 0, 0, 0.9);
             padding: 20px;
             border: 1px solid #00ff00;
-        }
-
-        .glitch-window {
-            position: fixed;
-            width: 400px;
-            height: 300px;
-            background: #000;
-            border: 1px solid #00ff00;
-            z-index: 9999;
-            display: none;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
-        }
-
-        .glitch-window-header {
-            background: #00ff00;
-            color: #000;
-            padding: 5px;
-            cursor: move;
-        }
-
-        .binary-rain {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 9998;
-            display: none;
         }
         
         /* Virus effect */
@@ -487,93 +390,34 @@
             color: #ff0000 !important;
         }
         
-        /* Sound controls */
-        .sound-controls {
+        /* Sound button */
+        .sound-toggle {
             position: fixed;
             bottom: 20px;
             left: 20px;
-            z-index: 1000;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        
-        .sound-btn {
             background: rgba(0, 255, 0, 0.1);
             border: 1px solid #00ff00;
             color: #00ff00;
-            padding: 5px 10px;
+            padding: 10px;
             cursor: pointer;
             font-family: monospace;
+            z-index: 1000;
         }
         
-        .sound-btn:hover {
+        .sound-toggle:hover {
             background: rgba(0, 255, 0, 0.2);
-        }
-        
-        /* Hint system */
-        .hint-box {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.95);
-            border: 1px solid #ffff00;
-            padding: 30px;
-            color: #ffff00;
-            display: none;
-            z-index: 10000;
-            max-width: 500px;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
-            
-            .glitch {
-                font-size: 32px;
-            }
-            
-            .section-title {
-                font-size: 24px;
-            }
-            
-            .terminal-window {
-                padding: 15px;
-            }
-            
-            .sound-controls {
-                bottom: 10px;
-                left: 10px;
-            }
         }
     </style>
 </head>
 <body>
     <canvas class="matrix-bg" id="matrix"></canvas>
     
-    <!-- Audio elements -->
-    <audio id="ambientSound" loop>
-        <source src="data:audio/mpeg;base64,SUQzAwAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjQ1LjEwMAAAAAAAAAAAAAAA//M4wAAAAAAAAAAAAEluZm8AAAAPAAAAEwAABLgAICAgICAgMDAwMDAwQEBAQEBAUFBQUFBQYGBgYGBgcHBwcHBwgICAgICAgJCQkJCQkKCgoKCgoLCwsLCwsLCwwMDAwMDAzMzMzMzM2NjY2NjY5OTk5OTk8PDw8PDw////////AAAAAExhdmM1OC45MQAAAAAAAAAAAAAAACQCgAAAAAAAAAA=" type="audio/mpeg">
-    </audio>
-    
-    <!-- Hidden elements for easter eggs -->
+    <!-- Hidden elements -->
     <div class="secret-message" id="secretMessage"></div>
     <div class="ascii-art" id="asciiArt"></div>
-    <canvas class="binary-rain" id="binaryRain"></canvas>
-    <div class="hint-box" id="hintBox">
-        <h3>INDICE DÉBLOQUÉ</h3>
-        <p id="hintText"></p>
-        <button onclick="this.parentElement.style.display='none'" style="margin-top: 20px; background: #000; border: 1px solid #ffff00; color: #ffff00; padding: 10px; cursor: pointer;">FERMER</button>
-    </div>
     
-    <!-- Sound controls -->
-    <div class="sound-controls">
-        <button class="sound-btn" id="soundToggle">🔊 Sons ON</button>
-        <button class="sound-btn" id="musicToggle">🎵 Ambiance ON</button>
-    </div>
+    <!-- Sound toggle -->
+    <button class="sound-toggle" id="soundToggle">🔊 Son: ON</button>
     
     <!-- Header -->
     <header class="header">
@@ -611,7 +455,8 @@
                 <br>
                 <p style="color: #fff;">"La justice n'existe pas. Nous sommes la conséquence."</p>
                 <br>
-                <p style="color: #ffff00;">💡 INDICE: Commencez par 'help' pour explorer le système.</p>
+                <p style="color: #ffff00;">💡 INDICE: Tapez 'help' pour commencer l'exploration</p>
+                <p style="color: #ffff00;">🔍 ÉNIGME: 3 serveurs cachés attendent d'être découverts...</p>
                 
                 <div class="command-line">
                     <span class="prompt">root@underground:~$</span>
@@ -657,8 +502,8 @@ STATUT: PHASE 1 - RECONSTRUCTION<br>
 MEMBRES ACTIFS: 7<br>
 NIVEAU DE PRÉPARATION: ████░░░░░░ 40%<br>
 <br>
-<span style="color: #ffff00;">// Note: Les anciens membres ont laissé des indices...</span><br>
-<span style="color: #ffff00;">// Cherchez les trois serveurs cachés dans le système</span><br>
+<span style="color: #ffff00;">// CLASSIFIED: Les serveurs ALPHA, BETA et GAMMA contiennent nos archives</span><br>
+<span style="color: #ffff00;">// Indices cachés dans le fichier enigma.sh</span><br>
             </code>
         </div>
     </section>
@@ -694,36 +539,6 @@ NIVEAU DE PRÉPARATION: ████░░░░░░ 40%<br>
                 <p>• Tests d'infiltration supervisés</p>
                 <p>• Établissement de cellules autonomes</p>
                 <p>• Mise en place de la hiérarchie</p>
-            </div>
-        </div>
-        
-        <h3 style="color: #fff; margin: 40px 0 30px 0;">OBJECTIFS LONG TERME (6-12 MOIS)</h3>
-        <div class="grid">
-            <div class="card">
-                <h3>Opération Transparence</h3>
-                <p>• Exposer la corruption du LSPD</p>
-                <p>• Révéler les malversations du procureur</p>
-                <p>• Publier les preuves du trafic EMS</p>
-                <p>• Dévoiler les liens criminalité/gouvernement</p>
-                <p>• Forcer des démissions et arrestations</p>
-            </div>
-            
-            <div class="card">
-                <h3>Redistribution Numérique</h3>
-                <p>• Transferts forcés depuis comptes corrompus</p>
-                <p>• Annulation de dettes citoyennes illégitimes</p>
-                <p>• Sabotage économique des profiteurs de guerre</p>
-                <p>• Création d'un fonds pour victimes du système</p>
-                <p>• Blackout financier des institutions corrompues</p>
-            </div>
-            
-            <div class="card">
-                <h3>Contrôle Infrastructure</h3>
-                <p>• Accès permanent aux caméras de la ville</p>
-                <p>• Manipulation du système de feux tricolores</p>
-                <p>• Contrôle des communications d'urgence</p>
-                <p>• Infiltration totale des bases de données</p>
-                <p>• Capacité de blackout à volonté</p>
             </div>
         </div>
     </section>
@@ -763,4 +578,165 @@ Statut: Actif - Cartographie des réseaux corrompus<br>
 [MEMBRE-005] "PIXEL"<br>
 Rôle: Opérations terrain<br>
 Cover: Livreur de pizzas<br>
-Spéc
+Spécialité: Installation hardware, infiltration physique<br>
+Statut: Actif - Sécurisation des planques<br>
+<br>
+[MEMBRE-006] "STATIC"<br>
+Rôle: Communications<br>
+Cover: Technicien télécom<br>
+Spécialité: Interception, brouillage radio<br>
+Statut: Actif - Écoute des fréquences gouvernementales<br>
+<br>
+[MEMBRE-007] "VOID"<br>
+Rôle: Finances & Logistique<br>
+Cover: Comptable freelance<br>
+Spécialité: Blanchiment crypto, transferts<br>
+Statut: Actif - Gestion des ressources<br>
+            </code>
+        </div>
+    </section>
+    
+    <!-- Recruitment Section -->
+    <section class="section" id="recruit">
+        <h2 class="section-title">./recruit.sh --init</h2>
+        
+        <div class="code-block">
+            <code>
+PROCESSUS DE RECRUTEMENT:<br>
+<br>
+PHASE 1: DÉCOUVERTE<br>
+Des indices sont disséminés dans Los Santos.<br>
+Graffitis. QR codes. Transmissions radio.<br>
+Seuls les plus observateurs les trouveront.<br>
+<br>
+PHASE 2: PREMIER CONTACT<br>
+Puzzle cryptographique à résoudre.<br>
+Temps limite: 48h. Pas de seconde chance.<br>
+<br>
+PHASE 3: ÉVALUATION<br>
+Test pratique supervisé à distance.<br>
+Hack mineur. Cible fournie. Méthode libre.<br>
+<br>
+PHASE 4: RENCONTRE<br>
+Lieu public. Heure tardive. Venez seul.<br>
+Nous vous observons depuis 72h minimum.<br>
+<br>
+PHASE 5: INITIATION<br>
+Première mission réelle. Baptême du feu.<br>
+Réussite = Membre. Échec = Oubli.<br>
+<br>
+POUR COMMENCER:<br>
+Cherchez le symbole dans Little Seoul.<br>
+La suite viendra à ceux qui comprennent.<br>
+<br>
+"La curiosité est la première qualité d'un hacker."<br>
+            </code>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <p>UNDERGROUND SOCIETY © 2025 | Réseau Sécurisé | Contact: [CRYPTÉ]</p>
+        <p>Nous sommes partout. Nous sommes nulle part. Nous sommes la conséquence.</p>
+        <p style="margin-top: 20px; font-size: 12px; opacity: 0.5;">
+            4C 61 20 6A 75 73 74 69 63 65 20 6E 27 65 78 69 73 74 65 20 70 61 73 2E
+        </p>
+    </footer>
+
+    <script>
+        // Matrix rain effect
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}";
+        const matrixArray = matrix.split("");
+        
+        const fontSize = 10;
+        const columns = canvas.width / fontSize;
+        
+        const drops = [];
+        for(let x = 0; x < columns; x++) {
+            drops[x] = 1;
+        }
+        
+        function draw() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#00ff00';
+            ctx.font = fontSize + 'px monospace';
+            
+            for(let i = 0; i < drops.length; i++) {
+                const text = matrixArray[Math.floor(Math.random() * matrixArray.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        
+        setInterval(draw, 35);
+
+        // Sound system
+        let soundEnabled = true;
+        const soundToggle = document.getElementById('soundToggle');
+        
+        // Create sound functions
+        function playSound(frequency, duration) {
+            if (!soundEnabled) return;
+            
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'square';
+            
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+        
+        // Sound effects
+        const sounds = {
+            keypress: () => playSound(1000, 0.05),
+            success: () => playSound(800, 0.1),
+            error: () => playSound(200, 0.2),
+            hack: () => {
+                playSound(400, 0.1);
+                setTimeout(() => playSound(600, 0.1), 100);
+                setTimeout(() => playSound(800, 0.1), 200);
+            }
+        };
+        
+        // Terminal functionality
+        const commandInput = document.getElementById('commandInput');
+        const terminalContent = document.getElementById('terminalContent');
+        let commandHistory = [];
+        let historyIndex = -1;
+        let hackerLevel = 0;
+        let foundSecrets = [];
+        
+        // Sound toggle
+        soundToggle.addEventListener('click', function() {
+            soundEnabled = !soundEnabled;
+            this.textContent = soundEnabled ? '🔊 Son: ON' : '🔇 Son: OFF';
+        });
+        
+        // Add terminal line
+        function addLine(text, className = '') {
+            const line = document.createElement('div');
+            line.className = className;
+            line.innerHTML = text;
+            terminalContent.insertBefore(line, document.querySelector('.command-line'));
+            terminal
